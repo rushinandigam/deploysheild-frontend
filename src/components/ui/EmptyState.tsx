@@ -13,7 +13,7 @@ export default function EmptyState({ title, description, icon, className }: Prop
   return (
     <div
       className={cn(
-        "flex min-h-[240px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.08] bg-zinc-950/30 px-8 py-12 text-center",
+        "relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-violet-500/20 bg-zinc-950/40 px-8 py-12 text-center shadow-inner shadow-violet-950/10 ring-1 ring-inset ring-white/[0.04] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(139,92,246,0.08),transparent)]",
         className,
       )}>
       {icon && <div className="mb-4 text-violet-400/80">{icon}</div>}
