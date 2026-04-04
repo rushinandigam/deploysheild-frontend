@@ -13,7 +13,11 @@ if (!clerkPublishableKey.trim()) {
 } else {
   createRoot(rootEl).render(
     <StrictMode>
-      <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/">
+      <ClerkProvider
+        publishableKey={clerkPublishableKey}
+        afterSignOutUrl="/"
+        signInUrl="/"
+        signUpUrl="/">
         <App />
       </ClerkProvider>
     </StrictMode>,

@@ -51,8 +51,8 @@ export default function CustomAuthScreen() {
         </div>
 
         <p className="mt-8 text-center text-xs text-zinc-600">
-          Secured by Clerk — your password never touches our API. GitHub access uses tokens Clerk stores after you
-          connect your account.
+          Secured by Clerk — credentials stay with Clerk. GitHub repo access uses DeployShield&apos;s OAuth after you
+          connect.
         </p>
       </div>
     </div>

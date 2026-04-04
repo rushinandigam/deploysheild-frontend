@@ -31,7 +31,8 @@ export default function ConnectGithubStep({ oauthError = false }: Props) {
           Authorize DeployShield on GitHub
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-          This is <strong className="text-zinc-300">separate from Clerk</strong>. You sign in here with email/password;
+          This is <strong className="text-zinc-300">separate from Clerk</strong>. You sign in with email/password or
+          Google;
           then you explicitly allow <strong className="text-zinc-300">our GitHub OAuth application</strong> to access
           repositories you grant. Tokens stay on <strong className="text-zinc-300">our backend</strong> and are used
           only to read repo metadata (branches, PRs, commits, Actions) for assessments you run.
