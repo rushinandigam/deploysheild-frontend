@@ -108,4 +108,56 @@ export async function checkHealth(): Promise<{ status: string }> {
   return res.json();
 }
 
+export type GithubRepoRow = {
+  full_name: string;
+  name: string;
+  private: boolean;
+  default_branch: string;
+};
+
+export async function fetchMyGithubRepos(
+  getToken: () => Promise<string | null>,
+): Promise<GithubRepoRow[]> {
+  const token = await getToken();
+  if (!token) throw new Error("Missing Clerk session");
+  const res = await fetch(`${apiBase}/api/v1/me/github/repos`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export type GithubConnectionStatus = {
+  connected: boolean;
+  github_login: string | null;
+};
+
+export async function fetchGithubConnectionStatus(
+  getToken: () => Promise<string | null>,
+): Promise<GithubConnectionStatus> {
+  const token = await getToken();
+  if (!token) throw new Error("Missing Clerk session");
+  const res = await fetch(`${apiBase}/api/v1/me/github/connection`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+/** Start DeployShield GitHub OAuth — returns GitHub authorize URL (full page redirect). */
+export async function postGithubAuthorizeUrl(
+  getToken: () => Promise<string | null>,
+): Promise<string> {
+  const token = await getToken();
+  if (!token) throw new Error("Missing Clerk session");
+  const res = await fetch(`${apiBase}/api/v1/integrations/github/authorize-url`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  const j: { authorization_url?: string } = await res.json();
+  if (!j.authorization_url) throw new Error("Missing authorization_url from API");
+  return j.authorization_url;
+}
+
 export { apiBase };

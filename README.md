@@ -5,8 +5,9 @@ Deploy the **API** and **static UI** on **[Render](https://render.com)** (no Git
 Quick flow:
 
 1. Deploy **backend** Web Service on Render → copy `https://….onrender.com`.
-2. Create **Static Site** on Render for this repo; set **`VITE_API_BASE_URL`** to that API URL in Environment.
-3. Backend CORS allows all origins — no extra backend env needed for CORS.
+2. Create **Static Site** on Render for this repo; set **`VITE_API_BASE_URL`** and **`VITE_CLERK_PUBLISHABLE_KEY`** (Clerk → API keys) as build-time env vars.
+3. On the **backend** Web Service, set **`CLERK_JWT_ISSUER`** (Clerk session verification) and **GitHub OAuth** vars: **`GITHUB_OAUTH_CLIENT_ID`**, **`GITHUB_OAUTH_CLIENT_SECRET`**, **`GITHUB_OAUTH_CALLBACK_URL`** (must be `https://YOUR-API/api/v1/integrations/github/callback`), plus **`FRONTEND_PUBLIC_URL`** (your static site origin for post-OAuth redirect). Optional: **`OPENAI_API_KEY`** for AI-assisted assessment text.
+4. Backend CORS allows all origins — no extra backend env needed for CORS.
 
 Replace `YOUR_FIREBASE_PROJECT_ID` in **`.firebaserc`** before deploying.
 
