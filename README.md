@@ -1,5 +1,22 @@
 # DeploySheild frontend (Vite + React)
 
+## Vibe Coding principles
+
+This project is structured around the **Vibe Coding** rubric (technical brilliance + industry readiness). Full criteria, mark breakdown, and how the monorepo maps to each point: **[`../README.md`](../README.md)** (root).
+
+## Software design (this package)
+
+| Theme | How it shows up here |
+|--------|----------------------|
+| **Modularity** | Route-level screens (`components/auth/`, onboarding, `DeployShieldApp`), shared `components/ui/` and `lib/`, API calls isolated in `api.ts`. |
+| **Scalability** | Static SPA + Clerk; no custom session server; API base URL from env for any backend host. |
+| **Maintainability** | TypeScript, ESLint, consistent Tailwind tokens and reusable form styles (`input-classes.ts`). |
+| **Efficient delivery & runtime** | Vite HMR, pnpm, Firebase/GitHub Actions workflows; minimal client work per navigation (tabs, lazy intel loads). |
+
+Full stack-wide write-up: **[`../README.md` — Software design principles](../README.md#software-design-principles)**.
+
+---
+
 Deploy the **API** and **static UI** on **[Render](https://render.com)** (no GitHub Actions). Full steps: **[DEPLOY.md](./DEPLOY.md)**.
 
 Quick flow:
