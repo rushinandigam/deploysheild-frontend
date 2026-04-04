@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { fetchMyGithubRepos, type GithubRepoRow } from "../api";
 import { loadSelectedRepos, saveSelectedRepos, setRepoOnboardingDone } from "../lib/onboardingStorage";
+import LogoMark from "./brand/LogoMark";
+import { Card, CardContent } from "./ui/Card";
+import AppBackdrop from "./ui/AppBackdrop";
+import Button from "./ui/Button";
 
 type Props = {
   userId: string;
@@ -63,87 +67,91 @@ export default function RepoScopeStep({ userId, getToken, onComplete }: Props) {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 px-4 py-10 text-zinc-100">
-      <div className="mx-auto max-w-3xl">
-        <h2 className="font-[Instrument_Sans,sans-serif] text-xl font-semibold text-white">
-          Choose repository scope
-        </h2>
-        <p className="mt-2 text-sm text-zinc-400">
-          Select every repository DeployShield should prioritize (you can still type any{" "}
-          <code className="text-zinc-500">owner/repo</code> later). Selection is stored on this device for your
-          account.
-        </p>
-
-        {err && (
-          <div className="mt-6 rounded-xl border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
-            {err}
-            <button type="button" onClick={() => load()} className="ml-3 text-violet-400 hover:underline">
-              Retry
-            </button>
+    <div className="relative min-h-dvh px-4 py-10 text-zinc-100">
+      <AppBackdrop />
+      <div className="relative mx-auto max-w-3xl">
+        <div className="mb-8 flex items-center gap-3">
+          <LogoMark size="sm" />
+          <div>
+            <p className="font-display text-lg font-semibold text-white">Repository scope</p>
+            <p className="text-xs text-zinc-500">Stored on this device for your account</p>
           </div>
-        )}
-
-        <div className="mt-6 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={selectAllVisible}
-            disabled={loading || rows.length === 0}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-200 hover:bg-zinc-800 disabled:opacity-40">
-            Select all (this page)
-          </button>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-200 hover:bg-zinc-800">
-            Clear
-          </button>
-          <button
-            type="button"
-            onClick={() => load()}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-200 hover:bg-zinc-800">
-            Reload list
-          </button>
         </div>
 
-        {loading && <p className="mt-8 text-sm text-zinc-500">Loading repositories from GitHub…</p>}
+        <Card glow>
+          <CardContent>
+            <h2 className="font-display text-xl font-semibold text-white">Choose repositories</h2>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              Select repos DeployShield should prioritize. You can still type any{" "}
+              <code className="rounded bg-zinc-900 px-1.5 py-0.5 text-zinc-400">owner/repo</code> later on the assess
+              tab.
+            </p>
 
-        {!loading && rows.length > 0 && (
-          <ul className="mt-6 max-h-[min(420px,50vh)] space-y-1 overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-900/40 p-2">
-            {rows.map((r) => (
-              <li key={r.full_name}>
-                <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 hover:bg-zinc-800/60">
-                  <input
-                    type="checkbox"
-                    checked={selected.has(r.full_name)}
-                    onChange={() => toggle(r.full_name)}
-                    className="h-4 w-4 rounded border-zinc-600 text-violet-600 focus:ring-violet-500"
-                  />
-                  <span className="flex-1 font-mono text-sm text-zinc-200">{r.full_name}</span>
-                  {r.private && (
-                    <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] uppercase text-zinc-500">
-                      private
-                    </span>
-                  )}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
+            {err && (
+              <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-rose-500/35 bg-rose-950/45 px-4 py-3 text-sm text-rose-100">
+                <span>{err}</span>
+                <button type="button" onClick={() => load()} className="text-sm font-semibold text-violet-400 hover:text-violet-300">
+                  Retry
+                </button>
+              </div>
+            )}
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={finish}
-            className="rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 hover:brightness-110">
-            Continue with {selected.size} repo{selected.size === 1 ? "" : "s"}
-          </button>
-          <button
-            type="button"
-            onClick={skipEmpty}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800">
-            Skip — I&apos;ll type repos manually
-          </button>
-        </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                disabled={loading || rows.length === 0}
+                onClick={selectAllVisible}
+                className="text-xs">
+                Select all visible
+              </Button>
+              <Button variant="secondary" onClick={clearAll} className="text-xs">
+                Clear
+              </Button>
+              <Button variant="ghost" onClick={() => load()} className="text-xs">
+                Reload list
+              </Button>
+            </div>
+
+            {loading && (
+              <div className="mt-8 flex items-center gap-3 text-sm text-zinc-500">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-500" />
+                Loading from GitHub…
+              </div>
+            )}
+
+            {!loading && rows.length > 0 && (
+              <ul className="mt-6 max-h-[min(420px,50vh)] space-y-1 overflow-y-auto rounded-2xl border border-white/[0.08] bg-zinc-950/50 p-2 shadow-inner shadow-black/30">
+                {rows.map((r) => (
+                  <li key={r.full_name}>
+                    <label className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-white/[0.04]">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(r.full_name)}
+                        onChange={() => toggle(r.full_name)}
+                        className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+                      />
+                      <span className="flex-1 font-mono text-sm text-zinc-200">{r.full_name}</span>
+                      {r.private && (
+                        <span className="rounded-md bg-zinc-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                          private
+                        </span>
+                      )}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button variant="primary" onClick={finish} className="px-6 py-3">
+                Continue with {selected.size} repo{selected.size === 1 ? "" : "s"}
+              </Button>
+              <Button variant="secondary" onClick={skipEmpty} className="px-6 py-3">
+                Skip — type repos manually
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

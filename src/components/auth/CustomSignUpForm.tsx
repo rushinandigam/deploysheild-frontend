@@ -2,6 +2,8 @@ import { useSignUp } from "@clerk/react/legacy";
 import { type FormEvent, useState } from "react";
 
 import { oauthRedirectUrls } from "../../lib/oauthPaths";
+import Button from "../ui/Button";
+import { inputFieldClass, labelClass } from "../ui/input-classes";
 import { clerkMessage } from "./clerkErrors";
 import GoogleMark from "./GoogleMark";
 
@@ -81,22 +83,22 @@ export default function CustomSignUpForm() {
   }
 
   if (!isLoaded) {
-    return <p className="text-center text-sm text-zinc-500">Loading…</p>;
+    return <p className="py-4 text-center text-sm text-zinc-500">Loading…</p>;
   }
 
   if (step === "verify") {
     return (
-      <form onSubmit={onVerify} className="mt-6 space-y-4 text-left">
-        <p className="text-sm text-zinc-400">
-          Enter the verification code sent to <span className="text-zinc-200">{email}</span>.
+      <form onSubmit={onVerify} className="space-y-4 text-left">
+        <p className="text-sm leading-relaxed text-zinc-400">
+          Enter the verification code sent to <span className="font-medium text-violet-300">{email}</span>.
         </p>
         {error && (
-          <div className="rounded-lg border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-sm text-rose-200">
+          <div className="rounded-xl border border-rose-500/35 bg-rose-950/45 px-3.5 py-2.5 text-sm text-rose-100">
             {error}
           </div>
         )}
         <div>
-          <label className="block text-xs font-medium uppercase tracking-wider text-zinc-500">Code</label>
+          <label className={labelClass}>Code</label>
           <input
             type="text"
             inputMode="numeric"
@@ -104,16 +106,13 @@ export default function CustomSignUpForm() {
             required
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+            className={`mt-1.5 ${inputFieldClass}`}
             placeholder="123456"
           />
         </div>
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
+        <Button type="submit" variant="primary" disabled={busy} className="w-full py-3">
           {busy ? "Verifying…" : "Verify & continue"}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => {
@@ -121,18 +120,18 @@ export default function CustomSignUpForm() {
             setCode("");
             setError(null);
           }}
-          className="w-full text-center text-xs text-zinc-500 hover:text-zinc-400">
-            ← Back
-          </button>
+          className="w-full text-center text-xs font-medium text-zinc-500 transition hover:text-zinc-300">
+          ← Back
+        </button>
       </form>
     );
   }
 
   return (
-    <div className="mt-6 space-y-4 text-left">
+    <div className="space-y-4 text-left">
       <div id="clerk-captcha" className="empty:hidden" />
       {error && (
-        <div className="rounded-lg border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-sm text-rose-200">
+        <div className="rounded-xl border border-rose-500/35 bg-rose-950/45 px-3.5 py-2.5 text-sm text-rose-100">
           {error}
         </div>
       )}
@@ -140,61 +139,58 @@ export default function CustomSignUpForm() {
         type="button"
         disabled={busy}
         onClick={() => void signUpWithGoogle()}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm font-medium text-zinc-100 transition hover:border-zinc-600 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-50">
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-zinc-100 shadow-inner shadow-black/20 transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50">
         <GoogleMark />
         Continue with Google
       </button>
-      <div className="relative py-2">
+      <div className="relative py-1">
         <div className="absolute inset-0 flex items-center" aria-hidden>
-          <div className="w-full border-t border-zinc-800" />
+          <div className="w-full border-t border-white/[0.08]" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase tracking-wider">
-          <span className="bg-zinc-950/60 px-2 text-zinc-500">or email</span>
+        <div className="relative flex justify-center text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
+          <span className="bg-zinc-950/90 px-3">or email</span>
         </div>
       </div>
       <form onSubmit={onCredentials} className="space-y-4">
-      <div>
-        <label className="block text-xs font-medium uppercase tracking-wider text-zinc-500">Email</label>
-        <input
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
-          placeholder="you@company.com"
-        />
-      </div>
-      <div>
-        <label className="block text-xs font-medium uppercase tracking-wider text-zinc-500">Password</label>
-        <input
-          type="password"
-          autoComplete="new-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
-          placeholder="••••••••"
-        />
-      </div>
-      <div>
-        <label className="block text-xs font-medium uppercase tracking-wider text-zinc-500">Confirm password</label>
-        <input
-          type="password"
-          autoComplete="new-password"
-          required
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
-          placeholder="••••••••"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={busy}
-        className="w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
-        {busy ? "Creating account…" : "Create account"}
-      </button>
+        <div>
+          <label className={labelClass}>Email</label>
+          <input
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`mt-1.5 ${inputFieldClass}`}
+            placeholder="you@company.com"
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Password</label>
+          <input
+            type="password"
+            autoComplete="new-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={`mt-1.5 ${inputFieldClass}`}
+            placeholder="••••••••"
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Confirm password</label>
+          <input
+            type="password"
+            autoComplete="new-password"
+            required
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className={`mt-1.5 ${inputFieldClass}`}
+            placeholder="••••••••"
+          />
+        </div>
+        <Button type="submit" variant="primary" disabled={busy} className="w-full py-3">
+          {busy ? "Creating account…" : "Create account"}
+        </Button>
       </form>
     </div>
   );

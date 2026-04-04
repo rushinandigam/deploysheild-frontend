@@ -4,8 +4,26 @@ import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { fetchGithubConnectionStatus } from "../api";
 import DeployShieldApp from "../DeployShieldApp";
 import { isRepoOnboardingDone, loadSelectedRepos } from "../lib/onboardingStorage";
+import LogoMark from "./brand/LogoMark";
+import { Card, CardContent } from "./ui/Card";
+import AppBackdrop from "./ui/AppBackdrop";
 import ConnectGithubStep from "./ConnectGithubStep";
 import RepoScopeStep from "./RepoScopeStep";
+
+function AuthLoading({ message }: { message: string }) {
+  return (
+    <div className="relative flex min-h-dvh flex-col items-center justify-center px-4">
+      <AppBackdrop />
+      <Card className="w-full max-w-sm">
+        <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
+          <LogoMark size="md" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-500" />
+          <p className="text-sm text-zinc-500">{message}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 function readInitialGithubOauthError(): boolean {
   if (typeof window === "undefined") return false;
@@ -45,23 +63,15 @@ export default function AuthenticatedApp() {
   }, [isLoaded, user, refreshGithub]);
 
   if (!isLoaded) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-950 text-zinc-500">Loading…</div>
-    );
+    return <AuthLoading message="Loading…" />;
   }
 
   if (!user) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-950 text-zinc-500">Session loading…</div>
-    );
+    return <AuthLoading message="Restoring session…" />;
   }
 
   if (githubConn === null) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-950 text-zinc-500">
-        Checking GitHub link…
-      </div>
-    );
+    return <AuthLoading message="Checking GitHub link…" />;
   }
 
   if (!githubConn.connected) {

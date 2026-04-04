@@ -2,6 +2,10 @@ import { useAuth } from "@clerk/react";
 import { useState } from "react";
 
 import { postGithubAuthorizeUrl } from "../api";
+import LogoMark from "./brand/LogoMark";
+import { Card, CardContent } from "./ui/Card";
+import AppBackdrop from "./ui/AppBackdrop";
+import Button from "./ui/Button";
 
 type Props = {
   oauthError?: boolean;
@@ -25,39 +29,47 @@ export default function ConnectGithubStep({ oauthError = false }: Props) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-950 px-4">
-      <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 text-center">
-        <h2 className="font-[Instrument_Sans,sans-serif] text-xl font-semibold text-white">
-          Authorize DeployShield on GitHub
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-          This is <strong className="text-zinc-300">separate from Clerk</strong>. You sign in with email/password or
-          Google;
-          then you explicitly allow <strong className="text-zinc-300">our GitHub OAuth application</strong> to access
-          repositories you grant. Tokens stay on <strong className="text-zinc-300">our backend</strong> and are used
-          only to read repo metadata (branches, PRs, commits, Actions) for assessments you run.
-        </p>
-        <p className="mt-2 text-xs text-zinc-500">
-          Create an OAuth App in GitHub (or use your org&apos;s) and set the callback URL to your API&apos;s{" "}
-          <code className="text-zinc-400">/api/v1/integrations/github/callback</code>.
-        </p>
-        {err && (
-          <div className="mt-4 rounded-lg border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-sm text-rose-200">
-            {err}
+    <div className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-12">
+      <AppBackdrop />
+      <Card glow className="w-full max-w-lg text-center shadow-2xl shadow-black/50">
+        <CardContent className="p-0">
+          <div className="px-8 py-10 sm:px-10">
+            <div className="mx-auto flex w-fit flex-col items-center gap-3">
+              <LogoMark size="md" />
+              <p className="font-display text-lg font-semibold text-white">Connect GitHub</p>
+            </div>
+            <h2 className="mt-6 font-display text-xl font-semibold tracking-tight text-white">
+              Authorize DeployShield
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              This is <strong className="font-medium text-zinc-200">separate from Clerk</strong>. You signed in with
+              email/password or Google; now allow{" "}
+              <strong className="font-medium text-zinc-200">DeployShield&apos;s GitHub OAuth app</strong> to read
+              metadata for repos you choose. Tokens stay on{" "}
+              <strong className="font-medium text-zinc-200">the backend</strong>.
+            </p>
+            <p className="mt-3 rounded-xl border border-white/[0.06] bg-zinc-950/50 px-3 py-2 text-left text-xs text-zinc-500">
+              OAuth callback on your API:{" "}
+              <code className="text-violet-300/90">/api/v1/integrations/github/callback</code>
+            </p>
+            {err && (
+              <div className="mt-4 rounded-xl border border-rose-500/35 bg-rose-950/45 px-3.5 py-2.5 text-sm text-rose-100">
+                {err}
+              </div>
+            )}
+            <Button
+              variant="primary"
+              disabled={busy}
+              onClick={() => void startOAuth()}
+              className="mt-8 w-full py-3.5 text-base">
+              {busy ? "Redirecting to GitHub…" : "Continue with GitHub"}
+            </Button>
+            <p className="mt-6 text-left text-xs leading-relaxed text-zinc-600">
+              Next you&apos;ll pick repositories to prioritize. You can revoke the OAuth app in GitHub anytime.
+            </p>
           </div>
-        )}
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => startOAuth()}
-          className="mt-8 w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
-          {busy ? "Redirecting to GitHub…" : "Continue with GitHub"}
-        </button>
-        <p className="mt-6 text-left text-xs text-zinc-600">
-          After GitHub redirects back to DeployShield, you&apos;ll pick which repositories to prioritize. You can revoke
-          access anytime by removing the OAuth app from GitHub or clearing the connection in a future settings screen.
-        </p>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

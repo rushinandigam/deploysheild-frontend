@@ -1,6 +1,10 @@
 import { useSignUp } from "@clerk/react/legacy";
 import { type FormEvent, useEffect, useState } from "react";
 
+import AppBackdrop from "../ui/AppBackdrop";
+import { Card, CardContent } from "../ui/Card";
+import { inputFieldClass, labelClass } from "../ui/input-classes";
+import Button from "../ui/Button";
 import { clerkMessage } from "./clerkErrors";
 
 function fieldLabel(field: string): string {
@@ -58,7 +62,10 @@ export default function ContinueSignUpRoute() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-950 text-sm text-zinc-500">Loading…</div>
+      <div className="relative flex min-h-dvh items-center justify-center text-sm text-zinc-500">
+        <AppBackdrop />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-500" />
+      </div>
     );
   }
 
@@ -99,63 +106,65 @@ export default function ContinueSignUpRoute() {
 
   if (status === "missing_requirements" && missingFields.length > 0) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-950 px-4 py-12">
-        <div className="w-full max-w-md rounded-2xl border border-zinc-800/80 bg-zinc-950/60 px-6 py-8">
-          <h1 className="font-[Instrument_Sans,sans-serif] text-xl font-semibold text-white">Finish sign-up</h1>
-          <p className="mt-2 text-sm text-zinc-400">Your account needs a bit more information to continue.</p>
-          {error && (
-            <div className="mt-4 rounded-lg border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-sm text-rose-200">
-              {error}
-            </div>
-          )}
-          <form onSubmit={onSubmit} className="mt-6 space-y-4">
-            {missingFields.map((field) =>
-              field === "legal_accepted" ? (
-                <label
-                  key={field}
-                  className="flex cursor-pointer items-start gap-3 text-sm text-zinc-300">
-                  <input
-                    type="checkbox"
-                    className="mt-1 h-4 w-4 shrink-0 rounded border-zinc-600 bg-zinc-900"
-                    checked={formData[field] === "true"}
-                    onChange={(ev) =>
-                      setFormData((prev) => ({ ...prev, [field]: ev.target.checked ? "true" : "" }))
-                    }
-                  />
-                  <span>{fieldLabel(field)}</span>
-                </label>
-              ) : (
-                <div key={field}>
-                  <label className="block text-xs font-medium uppercase tracking-wider text-zinc-500">
-                    {fieldLabel(field)}
-                  </label>
-                  <input
-                    type={field === "password" ? "password" : "text"}
-                    required
-                    value={formData[field] ?? ""}
-                    onChange={(ev) => setFormData((prev) => ({ ...prev, [field]: ev.target.value }))}
-                    className="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
-                  />
-                </div>
-              ),
+      <div className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-12">
+        <AppBackdrop />
+        <Card glow className="w-full max-w-md">
+          <CardContent>
+            <h1 className="font-display text-xl font-semibold text-white">Finish sign-up</h1>
+            <p className="mt-2 text-sm text-zinc-400">Your account needs a bit more information to continue.</p>
+            {error && (
+              <div className="mt-4 rounded-xl border border-rose-500/35 bg-rose-950/45 px-3.5 py-2.5 text-sm text-rose-100">
+                {error}
+              </div>
             )}
-            <div id="clerk-captcha" />
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
-              {busy ? "Saving…" : "Continue"}
-            </button>
-          </form>
-        </div>
+            <form onSubmit={onSubmit} className="mt-6 space-y-4">
+              {missingFields.map((field) =>
+                field === "legal_accepted" ? (
+                  <label
+                    key={field}
+                    className="flex cursor-pointer items-start gap-3 text-sm text-zinc-300">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4 shrink-0 rounded border-zinc-600 bg-zinc-900 text-violet-600"
+                      checked={formData[field] === "true"}
+                      onChange={(ev) =>
+                        setFormData((prev) => ({ ...prev, [field]: ev.target.checked ? "true" : "" }))
+                      }
+                    />
+                    <span>{fieldLabel(field)}</span>
+                  </label>
+                ) : (
+                  <div key={field}>
+                    <label className={labelClass}>{fieldLabel(field)}</label>
+                    <input
+                      type={field === "password" ? "password" : "text"}
+                      required
+                      value={formData[field] ?? ""}
+                      onChange={(ev) => setFormData((prev) => ({ ...prev, [field]: ev.target.value }))}
+                      className={`mt-1.5 ${inputFieldClass}`}
+                    />
+                  </div>
+                ),
+              )}
+              <div id="clerk-captcha" />
+              <Button type="submit" variant="primary" disabled={busy} className="w-full py-3">
+                {busy ? "Saving…" : "Continue"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-zinc-950 text-zinc-400">
+    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-4 text-zinc-400">
+      <AppBackdrop />
       <div id="clerk-captcha" />
-      <p className="text-sm">Setting up your account…</p>
+      <div className="flex items-center gap-3">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-500" />
+        <p className="text-sm text-zinc-500">Setting up your account…</p>
+      </div>
     </div>
   );
 }
