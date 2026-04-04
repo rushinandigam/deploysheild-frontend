@@ -14,6 +14,7 @@ import {
   type AssessmentSummary,
   type ServiceRiskRow,
 } from "./api";
+import AiInsightModal from "./components/AiInsightModal";
 import AssessmentExplanation from "./components/AssessmentExplanation";
 import LogoMark from "./components/brand/LogoMark";
 import ScoreGauge from "./components/ScoreGauge";
@@ -92,6 +93,8 @@ export default function DeployShieldApp({ selectedRepoScope }: DeployShieldAppPr
   const [intelLoading, setIntelLoading] = useState(false);
   const [decisionNote, setDecisionNote] = useState("");
   const [decidedBy, setDecidedBy] = useState("");
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiModalRequestError, setAiModalRequestError] = useState<string | null>(null);
 
   const refreshHistory = useCallback(async () => {
     const rows = await listAssessments(80);
@@ -130,6 +133,8 @@ export default function DeployShieldApp({ selectedRepoScope }: DeployShieldAppPr
   async function onAnalyze(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
+    setAiModalRequestError(null);
+    setAiModalOpen(true);
     setLoading(true);
     try {
       const body =
@@ -150,7 +155,9 @@ export default function DeployShieldApp({ selectedRepoScope }: DeployShieldAppPr
       setCurrent(a);
       await refreshHistory();
     } catch (ex) {
-      setErr(ex instanceof Error ? ex.message : "Request failed");
+      const msg = ex instanceof Error ? ex.message : "Request failed";
+      setErr(msg);
+      setAiModalRequestError(msg);
     } finally {
       setLoading(false);
     }
@@ -180,6 +187,13 @@ export default function DeployShieldApp({ selectedRepoScope }: DeployShieldAppPr
 
   return (
     <div className="relative min-h-dvh text-zinc-100 antialiased">
+      <AiInsightModal
+        open={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+        loading={loading}
+        aiText={explanationParts?.ai ?? null}
+        requestError={aiModalRequestError}
+      />
       <AppBackdrop intensity="subtle" />
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#050508]/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
@@ -428,7 +442,21 @@ export default function DeployShieldApp({ selectedRepoScope }: DeployShieldAppPr
                   </div>
 
                   {explanationParts ? (
-                    <AssessmentExplanation rules={explanationParts.rules} ai={explanationParts.ai} />
+                    <div className="space-y-3">
+                      <AssessmentExplanation rules={explanationParts.rules} />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAiModalRequestError(null);
+                          setAiModalOpen(true);
+                        }}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 px-4 py-3 text-sm font-semibold text-cyan-100 shadow-lg shadow-cyan-950/20 transition hover:border-cyan-400/45 hover:from-cyan-500/15 hover:to-fuchsia-500/15 sm:w-auto">
+                        <svg className="h-4 w-4 text-cyan-300" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                          <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.847a4.5 4.5 0 003.09 3.09L15.75 12l-2.847.813a4.5 4.5 0 00-3.09 3.09z" />
+                        </svg>
+                        Open OpenAI insight window
+                      </button>
+                    </div>
                   ) : null}
 
                   <div className="rounded-2xl border border-white/[0.1] bg-gradient-to-br from-zinc-900/50 to-zinc-950/90 p-5 shadow-inner shadow-black/30 ring-1 ring-inset ring-white/[0.04]">
